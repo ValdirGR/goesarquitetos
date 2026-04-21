@@ -23,7 +23,7 @@ const AdminLayout = () => {
     <div className="min-h-screen flex bg-background">
       <aside className="hidden md:flex w-64 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
         <div className="p-6 border-b border-sidebar-border">
-          <p className="font-serif text-xl">estúdio<span className="text-sidebar-primary">musgo</span></p>
+          <p className="font-serif text-xl">góes<span className="text-sidebar-primary"> arquitetos</span></p>
           <p className="text-xs text-sidebar-foreground/60 mt-1 uppercase tracking-wider">Painel admin</p>
         </div>
         <nav className="flex-1 p-3 space-y-1">

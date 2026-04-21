@@ -36,7 +36,7 @@ export const Header = () => {
     >
       <div className="container-editorial flex h-16 md:h-20 items-center justify-between">
         <Link to="/" className={cn("font-serif text-xl md:text-2xl tracking-tight", transparent ? "text-background" : "text-foreground")}>
-          estúdio<span className="text-primary">musgo</span>
+          góes<span className="text-primary"> arquitetos</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-10">

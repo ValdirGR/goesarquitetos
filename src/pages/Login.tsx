@@ -26,7 +26,7 @@ const Login = () => {
     <div className="min-h-screen grid md:grid-cols-2">
       <div className="hidden md:block bg-foreground relative">
         <div className="absolute inset-0 flex flex-col justify-between p-12 text-background">
-          <Link to="/" className="font-serif text-2xl">estúdio<span className="text-primary-glow">musgo</span></Link>
+          <Link to="/" className="font-serif text-2xl">góes<span className="text-primary-glow"> arquitetos</span></Link>
           <div>
             <p className="font-serif text-3xl leading-snug max-w-md">"A arquitetura é a vontade da época traduzida em espaço."</p>
             <p className="mt-4 text-background/60 text-sm">— Mies van der Rohe</p>

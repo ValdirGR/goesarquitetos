@@ -72,7 +72,7 @@ const Contact = () => {
             </div>
           </div>
           <div className="aspect-square bg-muted overflow-hidden mt-6">
-            <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=900&q=80" alt="Localização do estúdio" loading="lazy" className="h-full w-full object-cover grayscale" />
+            <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=900&q=80" alt="Localização do escritório" loading="lazy" className="h-full w-full object-cover grayscale" />
           </div>
         </aside>
 

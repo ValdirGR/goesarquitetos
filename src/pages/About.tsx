@@ -10,10 +10,11 @@ const values = [
 ];
 
 const milestones = [
-  { y: "2014", t: "Fundação do estúdio em São Paulo." },
-  { y: "2018", t: "Primeiro prêmio nacional de arquitetura residencial." },
-  { y: "2021", t: "Expansão para projetos comerciais e hospitalidade." },
-  { y: "2024", t: "120 projetos entregues em 24 cidades brasileiras." },
+  { y: "1978", t: "Formação de Décio Gomes Góes pela Unisinos (RS)." },
+  { y: "2001", t: "Início do mandato na Prefeitura de Criciúma (até 2004)." },
+  { y: "2007", t: "Atuação na Assembleia Legislativa de Santa Catarina (até 2010)." },
+  { y: "2013", t: "Início do mandato na Prefeitura de Balneário Rincão (até 2016)." },
+  { y: "2014", t: "Formação de Fernando Gyrão Góes pela Unisul (SC)." },
 ];
 
 const About = () => {
@@ -22,7 +23,7 @@ const About = () => {
       <section className="container-editorial pt-32 md:pt-40 pb-16">
         <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">Quem somos</p>
         <h1 className="font-serif text-4xl md:text-6xl max-w-3xl leading-[1.1]">
-          Um estúdio dedicado à arquitetura como ofício.
+          Um escritório dedicado à arquitetura como ofício.
         </h1>
       </section>
 

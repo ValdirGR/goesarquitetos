@@ -166,12 +166,12 @@ export interface SiteContent {
 export const initialContent: SiteContent = {
   heroTitle: "Arquitetura que respira o tempo.",
   heroSubtitle:
-    "Estúdio dedicado a projetos residenciais e comerciais autorais — onde luz, matéria e silêncio se encontram.",
+    "Escritório dedicado a projetos residenciais, comerciais, urbanísticos e de interiores — onde luz, matéria e silêncio se encontram.",
   heroCta: "Ver Projetos",
   philosophy:
     "Acreditamos em espaços que envelhecem com elegância. Cada projeto começa pela escuta — do lugar, da luz, do cliente — e se constrói com materiais honestos e proporções justas.",
   manifesto:
-    "Fundado em 2014, o estúdio nasce do encontro entre arquitetura, paisagem e arte. Trabalhamos sob medida, com poucos projetos por ano, dedicando atenção integral a cada detalhe — da implantação ao último puxador.",
+    "A Góes Arquitetos Associados nasce do encontro entre arquitetura, urbanismo e interiores. Trabalhamos sob medida, dedicando atenção integral a cada detalhe — da implantação ao último puxador.",
   contactAddress: "Rua dos Pinheiros, 240 — São Paulo, SP",
   contactPhone: "+55 11 4002-8922",
   contactEmail: "contato@estudiomusgo.com.br",
