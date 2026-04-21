@@ -130,10 +130,14 @@ const AdminNews = () => {
                 <Input type="date" value={editing.date} onChange={(e) => setEditing({ ...editing, date: e.target.value })} className="mt-2" />
               </div>
             </div>
-            <div>
-              <Label>URL da capa</Label>
-              <Input value={editing.cover} onChange={(e) => setEditing({ ...editing, cover: e.target.value })} className="mt-2" />
-            </div>
+            <ImageUploader
+              label="Imagem de capa"
+              value={editing.cover}
+              onChange={(url) => setEditing({ ...editing, cover: url })}
+              recommendedWidth={1600}
+              recommendedHeight={1200}
+              maxSizeMB={3}
+            />
             <div>
               <Label>Resumo</Label>
               <Textarea rows={3} value={editing.excerpt} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} className="mt-2" />
