@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2, X, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 import { useProjects } from "@/store/useStudioStore";
 import type { Project, ProjectCategory } from "@/data/projects";
 
@@ -30,17 +31,14 @@ const AdminProjects = () => {
   const { projects, upsert, remove } = useProjects();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Project>(empty);
-  const [galleryText, setGalleryText] = useState("");
   const isNew = !projects.find((p) => p.id === editing.id);
 
   const openNew = () => {
-    setEditing({ ...empty });
-    setGalleryText("");
+    setEditing({ ...empty, gallery: [] });
     setOpen(true);
   };
   const openEdit = (p: Project) => {
-    setEditing({ ...p });
-    setGalleryText(p.gallery.join("\n"));
+    setEditing({ ...p, gallery: [...p.gallery] });
     setOpen(true);
   };
 
@@ -50,10 +48,22 @@ const AdminProjects = () => {
       return;
     }
     const id = editing.id || slugify(editing.title);
-    const gallery = galleryText.split("\n").map((s) => s.trim()).filter(Boolean);
+    const gallery = editing.gallery.filter(Boolean);
     upsert({ ...editing, id, gallery, cover: editing.cover || gallery[0] || "" });
     toast.success(isNew ? "Projeto criado" : "Projeto atualizado");
     setOpen(false);
+  };
+
+  const setGalleryItem = (i: number, url: string) => {
+    const next = [...editing.gallery];
+    next[i] = url;
+    setEditing({ ...editing, gallery: next });
+  };
+  const removeGalleryItem = (i: number) => {
+    setEditing({ ...editing, gallery: editing.gallery.filter((_, idx) => idx !== i) });
+  };
+  const addGalleryItem = () => {
+    setEditing({ ...editing, gallery: [...editing.gallery, ""] });
   };
 
   const onDelete = (id: string) => {
@@ -139,13 +149,53 @@ const AdminProjects = () => {
               <Label>Local</Label>
               <Input value={editing.location} onChange={(e) => setEditing({ ...editing, location: e.target.value })} className="mt-2" />
             </div>
+            <ImageUploader
+              label="Imagem de capa"
+              value={editing.cover}
+              onChange={(url) => setEditing({ ...editing, cover: url })}
+              recommendedWidth={1600}
+              recommendedHeight={2000}
+              maxSizeMB={3}
+            />
             <div>
-              <Label>URL da capa</Label>
-              <Input value={editing.cover} onChange={(e) => setEditing({ ...editing, cover: e.target.value })} className="mt-2" />
-            </div>
-            <div>
-              <Label>Galeria (uma URL por linha)</Label>
-              <Textarea rows={5} value={galleryText} onChange={(e) => setGalleryText(e.target.value)} className="mt-2 font-mono text-xs" />
+              <div className="flex items-center justify-between mb-3">
+                <Label>Galeria de imagens</Label>
+                <Button type="button" variant="outline" size="sm" onClick={addGalleryItem}>
+                  <Plus className="size-3.5 mr-1" /> Adicionar imagem
+                </Button>
+              </div>
+              {editing.gallery.length === 0 && (
+                <p className="text-xs text-muted-foreground border border-dashed border-border rounded-md p-4 text-center">
+                  Nenhuma imagem na galeria. Clique em "Adicionar imagem" para enviar.
+                </p>
+              )}
+              <div className="space-y-4">
+                {editing.gallery.map((url, i) => (
+                  <div key={i} className="relative border border-border rounded-md p-3 bg-background">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Imagem {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeGalleryItem(i)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <X className="size-4" />
+                      </Button>
+                    </div>
+                    <ImageUploader
+                      value={url}
+                      onChange={(u) => setGalleryItem(i, u)}
+                      recommendedWidth={1600}
+                      recommendedHeight={1200}
+                      maxSizeMB={3}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
             <div>
               <Label>Descrição</Label>
