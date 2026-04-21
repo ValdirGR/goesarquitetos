@@ -118,6 +118,56 @@ const AdminContent = () => {
         <section className="space-y-4 p-6 border border-border rounded-md bg-card">
           <h2 className="font-serif text-xl">Manifesto (Quem Somos)</h2>
           <Field k="manifesto" label="Texto" area />
+          <div>
+            <Label>Imagem do Manifesto (URL)</Label>
+            <Input
+              value={form.manifestoImage}
+              onChange={(e) => setText("manifestoImage", e.target.value)}
+              placeholder="https://... ou deixe em branco para usar a padrão"
+              className="mt-2"
+            />
+            <div className="mt-3 flex items-center gap-3">
+              <input
+                id="manifesto-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = () => setText("manifestoImage", String(reader.result));
+                  reader.readAsDataURL(file);
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById("manifesto-upload")?.click()}
+              >
+                Enviar do computador
+              </Button>
+              {form.manifestoImage && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setText("manifestoImage", "")}
+                  className="text-destructive hover:text-destructive"
+                >
+                  Remover
+                </Button>
+              )}
+            </div>
+            {form.manifestoImage && (
+              <img
+                src={form.manifestoImage}
+                alt="Pré-visualização do Manifesto"
+                className="mt-4 w-48 h-auto rounded-md border border-border object-cover"
+              />
+            )}
+          </div>
         </section>
 
         <section className="space-y-4 p-6 border border-border rounded-md bg-card">
