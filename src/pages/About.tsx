@@ -1,5 +1,7 @@
 import teamImg from "@/assets/team.jpg";
-import { Compass, Leaf, Ruler, Sun } from "lucide-react";
+import { ArrowRight, Compass, Leaf, Ruler, Sun } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { useContent } from "@/store/useStudioStore";
 
 const values = [
@@ -146,6 +148,14 @@ const ManifestoSection = () => {
           <p className="mt-4 md:mt-6 text-sm sm:text-base md:text-lg text-foreground/80 leading-relaxed whitespace-pre-line">
             {content.manifesto}
           </p>
+          <div className="mt-6 md:mt-8">
+            <Button asChild size="lg" className="group">
+              <Link to="/projetos">
+                Ver Projetos
+                <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </section>
