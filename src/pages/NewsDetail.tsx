@@ -1,9 +1,13 @@
 import { Link, useParams, Navigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNews } from "@/store/useStudioStore";
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+
+const truncate = (s: string, n: number) =>
+  s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s;
 
 const NewsDetail = () => {
   const { id } = useParams();
@@ -13,6 +17,11 @@ const NewsDetail = () => {
 
   const sorted = [...news].sort((a, b) => b.date.localeCompare(a.date));
   const others = sorted.filter((n) => n.id !== post.id).slice(0, 3);
+
+  const pageTitle = truncate(`${post.title} · Góes Arquitetos`, 60);
+  const description = truncate(post.excerpt || post.content.replace(/\s+/g, " "), 158);
+  const url = typeof window !== "undefined" ? window.location.href : `/noticias/${post.id}`;
+  const image = post.cover;
 
   return (
     <>
