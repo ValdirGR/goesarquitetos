@@ -81,6 +81,72 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Áreas de Atuação */}
+      <section className="bg-muted/40 border-y border-border">
+        <div className="container-editorial py-24 md:py-36">
+          <div className="grid md:grid-cols-12 gap-10 mb-16">
+            <div className="md:col-span-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">O que fazemos</p>
+              <h2 className="font-serif text-3xl md:text-5xl leading-tight">Áreas de atuação</h2>
+            </div>
+            <p className="md:col-span-7 md:col-start-6 text-base md:text-lg text-foreground/75 leading-relaxed self-end">
+              A Góes Arquitetos Associados Ltda. atua de forma integrada em todas as etapas do processo arquitetônico
+              e urbanístico, do estudo inicial à entrega da obra.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
+            {[
+              {
+                t: "Arquitetura na construção civil",
+                d: "Concepção e desenvolvimento de projetos arquitetônicos para os mais diversos segmentos da construção civil, do residencial ao institucional.",
+              },
+              {
+                t: "Arquitetura de Interiores",
+                d: "Ambientes funcionais, sensoriais e atemporais — pensados sob medida para refletir a identidade de quem os habita.",
+              },
+              {
+                t: "Urbanismo",
+                d: "Soluções urbanas que articulam paisagem, mobilidade e convivência, respeitando a vocação de cada território.",
+              },
+              {
+                t: "Parcelamento do solo",
+                d: "Projetos de parcelamento do solo e planejamento físico-territorial, alinhados às diretrizes legais e ao desenho urbano.",
+              },
+              {
+                t: "Acompanhamento de obras",
+                d: "Acompanhamento técnico na execução e/ou fiscalização de obras, garantindo fidelidade ao projeto e qualidade construtiva.",
+              },
+              {
+                t: "Consultoria",
+                d: "Pareceres e orientações técnicas em arquitetura, urbanismo e processos de aprovação junto aos órgãos competentes.",
+              },
+              {
+                t: "Análise de terrenos",
+                d: "Estudo das potencialidades de terrenos conforme os Planos Diretores Urbanos, identificando o melhor aproveitamento.",
+              },
+              {
+                t: "Investimentos imobiliários",
+                d: "Assessoria em investimentos e empreendimentos imobiliários, conectando viabilidade técnica e estratégia de negócio.",
+              },
+            ].map((item, i) => (
+              <article
+                key={item.t}
+                className="bg-background p-8 md:p-10 group hover:bg-card transition-colors"
+              >
+                <p className="font-serif text-2xl text-primary mb-5">
+                  {String(i + 1).padStart(2, "0")}
+                </p>
+                <h3 className="font-serif text-xl md:text-2xl leading-snug mb-3 group-hover:text-primary transition-colors">
+                  {item.t}
+                </h3>
+                <p className="text-sm text-foreground/70 leading-relaxed">{item.d}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Números */}
       <section className="bg-foreground text-background py-20">
         <div className="container-editorial grid grid-cols-2 md:grid-cols-4 gap-10 text-center md:text-left">
