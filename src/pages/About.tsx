@@ -139,9 +139,31 @@ const About = () => {
   );
 };
 
-const ManifestoText = () => {
+const ManifestoSection = () => {
   const { content } = useContent();
-  return <>{content.manifesto}</>;
+  const src = content.manifestoImage?.trim() ? content.manifestoImage : teamImg;
+  return (
+    <section className="container-editorial pb-24">
+      <div className="grid md:grid-cols-2 gap-12 items-start">
+        <img
+          src={src}
+          alt="Arquitetos sócios do escritório"
+          loading="lazy"
+          width={1280}
+          height={1600}
+          className="w-full h-auto object-cover"
+        />
+        <div className="md:pt-10">
+          <p className="font-serif text-2xl md:text-3xl leading-snug text-foreground">
+            Manifesto
+          </p>
+          <p className="mt-6 text-base md:text-lg text-foreground/80 leading-relaxed whitespace-pre-line">
+            {content.manifesto}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default About;
