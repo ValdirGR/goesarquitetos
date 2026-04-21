@@ -137,13 +137,13 @@ const ManifestoSection = () => {
           />
         </div>
         <div className="md:pt-2">
-          <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3 md:mb-4">
+          <p className="text-[10px] md:text-xs uppercase tracking-[0.25em] md:tracking-[0.3em] text-primary mb-2 md:mb-4">
             Manifesto
           </p>
-          <p className="font-serif text-2xl md:text-3xl leading-snug text-foreground">
+          <h2 className="font-serif text-xl sm:text-2xl md:text-3xl leading-[1.2] md:leading-snug text-foreground text-balance">
             Arquitetura como ofício, lugar e tempo.
-          </p>
-          <p className="mt-5 md:mt-6 text-base md:text-lg text-foreground/80 leading-relaxed whitespace-pre-line">
+          </h2>
+          <p className="mt-4 md:mt-6 text-sm sm:text-base md:text-lg text-foreground/80 leading-relaxed whitespace-pre-line">
             {content.manifesto}
           </p>
         </div>
