@@ -1,12 +1,17 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import heroImg from "@/assets/hero.jpg";
-import { useContent, useProjects } from "@/store/useStudioStore";
+import { useContent, useProjects, useNews } from "@/store/useStudioStore";
+
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 
 const Home = () => {
   const { content } = useContent();
   const { projects } = useProjects();
+  const { news } = useNews();
   const featured = projects.slice(0, 4);
+  const latestNews = [...news].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
 
   return (
     <>
@@ -129,6 +134,60 @@ const Home = () => {
           ))}
         </div>
       </section>
+
+      {/* Notícias */}
+      {latestNews.length > 0 && (
+        <section className="container-editorial py-24 md:py-36">
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3">Jornal</p>
+              <h2 className="font-serif text-3xl md:text-5xl">Últimas notícias</h2>
+            </div>
+            <Link
+              to="/noticias"
+              className="hidden md:inline-flex items-center gap-2 text-sm uppercase tracking-wide text-foreground/70 hover:text-primary"
+            >
+              Ver todas <ArrowRight className="size-4" />
+            </Link>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 md:gap-10">
+            {latestNews.map((n) => (
+              <Link key={n.id} to={`/noticias/${n.id}`} className="group block">
+                <div className="aspect-[4/3] overflow-hidden bg-muted">
+                  <img
+                    src={n.cover}
+                    alt={n.title}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+                <p className="mt-5 text-xs uppercase tracking-[0.25em] text-primary">
+                  {n.category} · {formatDate(n.date)}
+                </p>
+                <h3 className="font-serif text-xl md:text-2xl mt-3 leading-snug group-hover:text-primary transition-colors">
+                  {n.title}
+                </h3>
+                <p className="mt-3 text-sm text-foreground/70 leading-relaxed line-clamp-3">
+                  {n.excerpt}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-foreground/70 group-hover:text-primary group-hover:gap-3 transition-all">
+                  Ler matéria <ArrowRight className="size-3.5" />
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="md:hidden mt-10">
+            <Link
+              to="/noticias"
+              className="inline-flex items-center gap-2 text-sm uppercase tracking-wide text-foreground/70 hover:text-primary"
+            >
+              Ver todas <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* CTA Contato */}
       <section className="container-editorial py-24 md:py-36 text-center">

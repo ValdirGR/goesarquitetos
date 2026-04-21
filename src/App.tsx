@@ -8,11 +8,14 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
+import News from "./pages/News";
+import NewsDetail from "./pages/NewsDetail";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminProjects from "./pages/admin/AdminProjects";
 import AdminContent from "./pages/admin/AdminContent";
+import AdminNews from "./pages/admin/AdminNews";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,12 +32,15 @@ const App = () => (
             <Route path="/quem-somos" element={<About />} />
             <Route path="/projetos" element={<Projects />} />
             <Route path="/projetos/:id" element={<ProjectDetail />} />
+            <Route path="/noticias" element={<News />} />
+            <Route path="/noticias/:id" element={<NewsDetail />} />
             <Route path="/contato" element={<Contact />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="/admin/projetos" replace />} />
             <Route path="projetos" element={<AdminProjects />} />
+            <Route path="noticias" element={<AdminNews />} />
             <Route path="conteudo" element={<AdminContent />} />
           </Route>
           <Route path="*" element={<NotFound />} />

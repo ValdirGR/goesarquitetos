@@ -1,11 +1,12 @@
 import { Navigate, NavLink, Outlet, useNavigate } from "react-router-dom";
-import { FileText, FolderKanban, LogOut } from "lucide-react";
+import { FileText, FolderKanban, LogOut, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/store/useStudioStore";
 import { Button } from "@/components/ui/button";
 
 const items = [
   { to: "/admin/projetos", label: "Projetos", icon: FolderKanban },
+  { to: "/admin/noticias", label: "Notícias", icon: Newspaper },
   { to: "/admin/conteudo", label: "Conteúdo do Site", icon: FileText },
 ];
 

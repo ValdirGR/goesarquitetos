@@ -1,9 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { initialProjects, initialContent, type Project, type SiteContent } from "@/data/projects";
+import { initialNews, type NewsPost } from "@/data/news";
 
 const PROJECTS_KEY = "studio.projects";
 const CONTENT_KEY = "studio.content";
 const AUTH_KEY = "studio.auth";
+const NEWS_KEY = "studio.news";
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -62,6 +64,29 @@ export function useContent() {
   }, []);
 
   return { content, update };
+}
+
+export function useNews() {
+  const [news, setNews] = useState<NewsPost[]>(() => load(NEWS_KEY, initialNews));
+  useEffect(() => {
+    const l = () => setNews(load(NEWS_KEY, initialNews));
+    listeners.add(l);
+    return () => { listeners.delete(l); };
+  }, []);
+
+  const upsert = useCallback((n: NewsPost) => {
+    const list = load<NewsPost[]>(NEWS_KEY, initialNews);
+    const idx = list.findIndex((x) => x.id === n.id);
+    if (idx >= 0) list[idx] = n; else list.unshift(n);
+    save(NEWS_KEY, list);
+  }, []);
+
+  const remove = useCallback((id: string) => {
+    const list = load<NewsPost[]>(NEWS_KEY, initialNews).filter((n) => n.id !== id);
+    save(NEWS_KEY, list);
+  }, []);
+
+  return { news, upsert, remove };
 }
 
 export function useAuth() {
