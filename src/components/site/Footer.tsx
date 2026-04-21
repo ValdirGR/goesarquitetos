@@ -8,7 +8,7 @@ export const Footer = () => {
     <footer className="bg-foreground text-background mt-24">
       <div className="container-editorial py-16 grid gap-10 md:grid-cols-4">
         <div className="md:col-span-2">
-          <div className="font-serif text-2xl">estúdio<span className="text-primary-glow">musgo</span></div>
+          <div className="font-serif text-2xl">góes<span className="text-primary-glow"> arquitetos</span></div>
           <p className="mt-4 text-background/70 max-w-md text-sm leading-relaxed">
             Arquitetura autoral para residências e espaços comerciais. Projetos sob medida, do conceito à obra.
           </p>
@@ -37,7 +37,7 @@ export const Footer = () => {
       </div>
       <div className="border-t border-background/10">
         <div className="container-editorial py-6 flex flex-col md:flex-row justify-between text-xs text-background/50">
-          <p>© {new Date().getFullYear()} estúdio musgo. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Góes Arquitetos Associados Ltda. Todos os direitos reservados.</p>
           <Link to="/login" className="hover:text-background/80">Acesso restrito</Link>
         </div>
       </div>

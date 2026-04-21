@@ -21,7 +21,7 @@ const Home = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/20 to-foreground/70" />
         <div className="relative z-10 container-editorial h-full flex flex-col justify-end pb-24 md:pb-32 text-background fade-in-up">
-          <p className="text-xs tracking-[0.3em] uppercase mb-6 text-background/80">Estúdio de Arquitetura</p>
+          <p className="text-xs tracking-[0.3em] uppercase mb-6 text-background/80">Escritório de Arquitetura</p>
           <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl max-w-4xl leading-[1.05]">
             {content.heroTitle}
           </h1>
