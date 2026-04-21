@@ -140,13 +140,53 @@ const AdminProjects = () => {
               <Label>Local</Label>
               <Input value={editing.location} onChange={(e) => setEditing({ ...editing, location: e.target.value })} className="mt-2" />
             </div>
+            <ImageUploader
+              label="Imagem de capa"
+              value={editing.cover}
+              onChange={(url) => setEditing({ ...editing, cover: url })}
+              recommendedWidth={1600}
+              recommendedHeight={2000}
+              maxSizeMB={3}
+            />
             <div>
-              <Label>URL da capa</Label>
-              <Input value={editing.cover} onChange={(e) => setEditing({ ...editing, cover: e.target.value })} className="mt-2" />
-            </div>
-            <div>
-              <Label>Galeria (uma URL por linha)</Label>
-              <Textarea rows={5} value={galleryText} onChange={(e) => setGalleryText(e.target.value)} className="mt-2 font-mono text-xs" />
+              <div className="flex items-center justify-between mb-3">
+                <Label>Galeria de imagens</Label>
+                <Button type="button" variant="outline" size="sm" onClick={addGalleryItem}>
+                  <Plus className="size-3.5 mr-1" /> Adicionar imagem
+                </Button>
+              </div>
+              {editing.gallery.length === 0 && (
+                <p className="text-xs text-muted-foreground border border-dashed border-border rounded-md p-4 text-center">
+                  Nenhuma imagem na galeria. Clique em "Adicionar imagem" para enviar.
+                </p>
+              )}
+              <div className="space-y-4">
+                {editing.gallery.map((url, i) => (
+                  <div key={i} className="relative border border-border rounded-md p-3 bg-background">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Imagem {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeGalleryItem(i)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <X className="size-4" />
+                      </Button>
+                    </div>
+                    <ImageUploader
+                      value={url}
+                      onChange={(u) => setGalleryItem(i, u)}
+                      recommendedWidth={1600}
+                      recommendedHeight={1200}
+                      maxSizeMB={3}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
             <div>
               <Label>Descrição</Label>
