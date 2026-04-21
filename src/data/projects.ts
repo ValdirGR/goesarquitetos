@@ -154,6 +154,7 @@ export interface SiteContent {
   heroCta: string;
   philosophy: string;
   manifesto: string;
+  manifestoImage: string;
   contactAddress: string;
   contactPhone: string;
   contactEmail: string;
