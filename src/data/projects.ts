@@ -173,6 +173,7 @@ export const initialContent: SiteContent = {
     "Acreditamos em espaços que envelhecem com elegância. Cada projeto começa pela escuta — do lugar, da luz, do cliente — e se constrói com materiais honestos e proporções justas.",
   manifesto:
     "A Góes Arquitetos Associados nasce do encontro entre arquitetura, urbanismo e interiores. Trabalhamos sob medida, dedicando atenção integral a cada detalhe — da implantação ao último puxador.",
+  manifestoImage: "/src/assets/team.jpg",
   contactAddress: "Rua dos Pinheiros, 240 — São Paulo, SP",
   contactPhone: "+55 11 4002-8922",
   contactEmail: "contato@goesarquitetos.com.br",
