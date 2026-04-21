@@ -31,17 +31,14 @@ const AdminProjects = () => {
   const { projects, upsert, remove } = useProjects();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Project>(empty);
-  const [galleryText, setGalleryText] = useState("");
   const isNew = !projects.find((p) => p.id === editing.id);
 
   const openNew = () => {
-    setEditing({ ...empty });
-    setGalleryText("");
+    setEditing({ ...empty, gallery: [] });
     setOpen(true);
   };
   const openEdit = (p: Project) => {
-    setEditing({ ...p });
-    setGalleryText(p.gallery.join("\n"));
+    setEditing({ ...p, gallery: [...p.gallery] });
     setOpen(true);
   };
 
@@ -51,10 +48,22 @@ const AdminProjects = () => {
       return;
     }
     const id = editing.id || slugify(editing.title);
-    const gallery = galleryText.split("\n").map((s) => s.trim()).filter(Boolean);
+    const gallery = editing.gallery.filter(Boolean);
     upsert({ ...editing, id, gallery, cover: editing.cover || gallery[0] || "" });
     toast.success(isNew ? "Projeto criado" : "Projeto atualizado");
     setOpen(false);
+  };
+
+  const setGalleryItem = (i: number, url: string) => {
+    const next = [...editing.gallery];
+    next[i] = url;
+    setEditing({ ...editing, gallery: next });
+  };
+  const removeGalleryItem = (i: number) => {
+    setEditing({ ...editing, gallery: editing.gallery.filter((_, idx) => idx !== i) });
+  };
+  const addGalleryItem = () => {
+    setEditing({ ...editing, gallery: [...editing.gallery, ""] });
   };
 
   const onDelete = (id: string) => {
