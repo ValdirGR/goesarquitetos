@@ -174,7 +174,7 @@ export const initialContent: SiteContent = {
     "A Góes Arquitetos Associados nasce do encontro entre arquitetura, urbanismo e interiores. Trabalhamos sob medida, dedicando atenção integral a cada detalhe — da implantação ao último puxador.",
   contactAddress: "Rua dos Pinheiros, 240 — São Paulo, SP",
   contactPhone: "+55 11 4002-8922",
-  contactEmail: "contato@estudiomusgo.com.br",
+  contactEmail: "contato@goesarquitetos.com.br",
   servicesEyebrow: "O que fazemos",
   servicesTitle: "Áreas de atuação",
   servicesIntro:
