@@ -1,9 +1,13 @@
 import { Link, useParams, Navigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useNews } from "@/store/useStudioStore";
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+
+const truncate = (s: string, n: number) =>
+  s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s;
 
 const NewsDetail = () => {
   const { id } = useParams();
@@ -14,8 +18,46 @@ const NewsDetail = () => {
   const sorted = [...news].sort((a, b) => b.date.localeCompare(a.date));
   const others = sorted.filter((n) => n.id !== post.id).slice(0, 3);
 
+  const pageTitle = truncate(`${post.title} · Góes Arquitetos`, 60);
+  const description = truncate(post.excerpt || post.content.replace(/\s+/g, " "), 158);
+  const url = typeof window !== "undefined" ? window.location.href : `/noticias/${post.id}`;
+  const image = post.cover;
+
   return (
     <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={url} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={url} />
+        {image && <meta property="og:image" content={image} />}
+        <meta property="article:published_time" content={post.date} />
+        <meta property="article:author" content={post.author} />
+        <meta property="article:section" content={post.category} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={description} />
+        {image && <meta name="twitter:image" content={image} />}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            headline: post.title,
+            description,
+            image: image ? [image] : undefined,
+            datePublished: post.date,
+            author: { "@type": "Person", name: post.author },
+            publisher: {
+              "@type": "Organization",
+              name: "Góes Arquitetos Associados",
+            },
+            mainEntityOfPage: url,
+          })}
+        </script>
+      </Helmet>
       <article className="container-editorial pt-32 md:pt-40 pb-16 md:pb-24 max-w-3xl">
         <Link
           to="/noticias"
