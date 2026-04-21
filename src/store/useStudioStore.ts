@@ -1,9 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { initialProjects, initialContent, type Project, type SiteContent } from "@/data/projects";
+import { initialNews, type NewsPost } from "@/data/news";
 
 const PROJECTS_KEY = "studio.projects";
 const CONTENT_KEY = "studio.content";
 const AUTH_KEY = "studio.auth";
+const NEWS_KEY = "studio.news";
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
