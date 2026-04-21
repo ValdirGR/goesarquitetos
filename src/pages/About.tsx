@@ -124,21 +124,26 @@ const ManifestoSection = () => {
   const { content } = useContent();
   const src = content.manifestoImage?.trim() ? content.manifestoImage : teamImg;
   return (
-    <section className="container-editorial pb-24">
-      <div className="grid md:grid-cols-2 gap-12 items-start">
-        <img
-          src={src}
-          alt="Arquitetos sócios do escritório"
-          loading="lazy"
-          width={1280}
-          height={1600}
-          className="w-full h-auto object-cover"
-        />
-        <div className="md:pt-10">
-          <p className="font-serif text-2xl md:text-3xl leading-snug text-foreground">
+    <section className="container-editorial pb-20 md:pb-24">
+      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div className="aspect-[4/5] md:aspect-[4/5] w-full overflow-hidden">
+          <img
+            src={src}
+            alt="Arquitetos sócios do escritório"
+            loading="lazy"
+            width={1280}
+            height={1600}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="md:pt-2">
+          <p className="text-xs uppercase tracking-[0.3em] text-primary mb-3 md:mb-4">
             Manifesto
           </p>
-          <p className="mt-6 text-base md:text-lg text-foreground/80 leading-relaxed whitespace-pre-line">
+          <p className="font-serif text-2xl md:text-3xl leading-snug text-foreground">
+            Arquitetura como ofício, lugar e tempo.
+          </p>
+          <p className="mt-5 md:mt-6 text-base md:text-lg text-foreground/80 leading-relaxed whitespace-pre-line">
             {content.manifesto}
           </p>
         </div>
