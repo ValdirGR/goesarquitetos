@@ -30,7 +30,7 @@ const About = () => {
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <img
             src={teamImg}
-            alt="Sócias fundadoras do estúdio"
+            alt="Arquitetos sócios do escritório"
             loading="lazy"
             width={1280}
             height={1600}
@@ -41,20 +41,68 @@ const About = () => {
               Manifesto
             </p>
             <p className="mt-6 text-base md:text-lg text-foreground/80 leading-relaxed whitespace-pre-line">
-              {/* manifesto vem do conteúdo gerenciado */}
               <ManifestoText />
             </p>
-            <div className="mt-10 grid grid-cols-2 gap-6">
-              <div>
-                <p className="font-serif text-xl">Helena Marques</p>
-                <p className="text-sm text-muted-foreground">Sócia-fundadora</p>
-              </div>
-              <div>
-                <p className="font-serif text-xl">Beatriz Antunes</p>
-                <p className="text-sm text-muted-foreground">Sócia-fundadora</p>
-              </div>
-            </div>
           </div>
+        </div>
+      </section>
+
+      {/* Arquitetos */}
+      <section className="container-editorial pb-24">
+        <h2 className="font-serif text-3xl md:text-4xl mb-12">Arquitetos</h2>
+        <div className="grid md:grid-cols-2 gap-12 md:gap-16">
+          <article>
+            <p className="font-serif text-2xl md:text-3xl">Décio Gomes Góes</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Arquiteto e Urbanista · CAU A3612-9
+            </p>
+            <div className="mt-6 space-y-4 text-foreground/80 leading-relaxed text-base">
+              <p>
+                Formado em 1978 pela Universidade do Vale do Rio dos Sinos — Unisinos,
+                São Leopoldo/Rio Grande do Sul.
+              </p>
+              <p>
+                Ao longo de quase 48 anos de exercício profissional, vem compondo um amplo
+                portfólio de projetos e reformas de casas, edifícios residenciais, comerciais
+                e industriais, clubes recreativos e propostas urbanísticas, alguns dos quais
+                em parceria com colegas.
+              </p>
+              <p>
+                Os mandatos conquistados nas Prefeituras de Criciúma (2001 a 2004) e Balneário
+                Rincão (2013 a 2016) e na Assembleia Legislativa do Estado de Santa Catarina —
+                ALESC (2007 a 2010) lhe possibilitaram acumular grande experiência no
+                planejamento e desenvolvimento regional, estadual e em planos diretores urbanos.
+              </p>
+              <p>
+                Participa de entidades de classe, como o IAB e a ASCEA. Foi Conselheiro do
+                CREA e CAU/SC.
+              </p>
+              <p>
+                Continua sendo um apaixonado por sua arte, muito mais do que nos primeiros
+                projetos arquitetônicos e urbanísticos.
+              </p>
+            </div>
+          </article>
+
+          <article>
+            <p className="font-serif text-2xl md:text-3xl">Fernando Gyrão Góes</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Arquiteto e Urbanista · CAU 14.9368-0
+            </p>
+            <div className="mt-6 space-y-4 text-foreground/80 leading-relaxed text-base">
+              <p>
+                Formado em 2014 pela Universidade do Sul de Santa Catarina — Unisul,
+                Tubarão/Santa Catarina, seus trabalhos estão ligados à Arquitetura de
+                Interiores, Iluminação, Pintura, Escultura, Marketing e Gestão de Negócios.
+              </p>
+              <p>
+                Além disso, atua nas áreas de corretagem e avaliação imobiliária.
+              </p>
+              <p>
+                Atualmente, cursa Design de Interiores no SENAC.
+              </p>
+            </div>
+          </article>
         </div>
       </section>
 
