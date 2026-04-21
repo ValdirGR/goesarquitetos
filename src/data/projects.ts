@@ -143,6 +143,11 @@ export const initialProjects: Project[] = [
   },
 ];
 
+export interface ServiceItem {
+  title: string;
+  description: string;
+}
+
 export interface SiteContent {
   heroTitle: string;
   heroSubtitle: string;
@@ -152,6 +157,10 @@ export interface SiteContent {
   contactAddress: string;
   contactPhone: string;
   contactEmail: string;
+  servicesEyebrow: string;
+  servicesTitle: string;
+  servicesIntro: string;
+  services: ServiceItem[];
 }
 
 export const initialContent: SiteContent = {
@@ -166,4 +175,18 @@ export const initialContent: SiteContent = {
   contactAddress: "Rua dos Pinheiros, 240 — São Paulo, SP",
   contactPhone: "+55 11 4002-8922",
   contactEmail: "contato@estudiomusgo.com.br",
+  servicesEyebrow: "O que fazemos",
+  servicesTitle: "Áreas de atuação",
+  servicesIntro:
+    "A Góes Arquitetos Associados Ltda. atua de forma integrada em todas as etapas do processo arquitetônico e urbanístico, do estudo inicial à entrega da obra.",
+  services: [
+    { title: "Arquitetura na construção civil", description: "Concepção e desenvolvimento de projetos arquitetônicos para os mais diversos segmentos da construção civil, do residencial ao institucional." },
+    { title: "Arquitetura de Interiores", description: "Ambientes funcionais, sensoriais e atemporais — pensados sob medida para refletir a identidade de quem os habita." },
+    { title: "Urbanismo", description: "Soluções urbanas que articulam paisagem, mobilidade e convivência, respeitando a vocação de cada território." },
+    { title: "Parcelamento do solo", description: "Projetos de parcelamento do solo e planejamento físico-territorial, alinhados às diretrizes legais e ao desenho urbano." },
+    { title: "Acompanhamento de obras", description: "Acompanhamento técnico na execução e/ou fiscalização de obras, garantindo fidelidade ao projeto e qualidade construtiva." },
+    { title: "Consultoria", description: "Pareceres e orientações técnicas em arquitetura, urbanismo e processos de aprovação junto aos órgãos competentes." },
+    { title: "Análise de terrenos", description: "Estudo das potencialidades de terrenos conforme os Planos Diretores Urbanos, identificando o melhor aproveitamento." },
+    { title: "Investimentos imobiliários", description: "Assessoria em investimentos e empreendimentos imobiliários, conectando viabilidade técnica e estratégia de negócio." },
+  ],
 };

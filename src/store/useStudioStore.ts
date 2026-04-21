@@ -48,15 +48,16 @@ export function useProjects() {
 }
 
 export function useContent() {
-  const [content, setContent] = useState<SiteContent>(() => load(CONTENT_KEY, initialContent));
+  const merged = (raw: SiteContent): SiteContent => ({ ...initialContent, ...raw });
+  const [content, setContent] = useState<SiteContent>(() => merged(load(CONTENT_KEY, initialContent)));
   useEffect(() => {
-    const l = () => setContent(load(CONTENT_KEY, initialContent));
+    const l = () => setContent(merged(load(CONTENT_KEY, initialContent)));
     listeners.add(l);
     return () => { listeners.delete(l); };
   }, []);
 
   const update = useCallback((patch: Partial<SiteContent>) => {
-    const next = { ...load(CONTENT_KEY, initialContent), ...patch };
+    const next = { ...merged(load(CONTENT_KEY, initialContent)), ...patch };
     save(CONTENT_KEY, next);
   }, []);
 
