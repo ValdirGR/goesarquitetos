@@ -25,6 +25,39 @@ const NewsDetail = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={url} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={url} />
+        {image && <meta property="og:image" content={image} />}
+        <meta property="article:published_time" content={post.date} />
+        <meta property="article:author" content={post.author} />
+        <meta property="article:section" content={post.category} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={description} />
+        {image && <meta name="twitter:image" content={image} />}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            headline: post.title,
+            description,
+            image: image ? [image] : undefined,
+            datePublished: post.date,
+            author: { "@type": "Person", name: post.author },
+            publisher: {
+              "@type": "Organization",
+              name: "Góes Arquitetos Associados",
+            },
+            mainEntityOfPage: url,
+          })}
+        </script>
+      </Helmet>
       <article className="container-editorial pt-32 md:pt-40 pb-16 md:pb-24 max-w-3xl">
         <Link
           to="/noticias"
