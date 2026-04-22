@@ -1,8 +1,17 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useProjects } from "@/store/useStudioStore";
 import { cn } from "@/lib/utils";
 import type { ProjectCategory } from "@/data/projects";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 type Filter = "todos" | ProjectCategory;
 
@@ -12,14 +21,43 @@ const filters: { key: Filter; label: string }[] = [
   { key: "comercial", label: "Comerciais" },
 ];
 
+const PAGE_SIZE = 12;
+
+function getPageItems(current: number, total: number): (number | "ellipsis")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const items: (number | "ellipsis")[] = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  if (start > 2) items.push("ellipsis");
+  for (let i = start; i <= end; i++) items.push(i);
+  if (end < total - 1) items.push("ellipsis");
+  items.push(total);
+  return items;
+}
+
 const Projects = () => {
   const { projects } = useProjects();
   const [filter, setFilter] = useState<Filter>("todos");
+  const [page, setPage] = useState(1);
 
   const filtered = useMemo(
     () => (filter === "todos" ? projects : projects.filter((p) => p.category === filter)),
     [projects, filter],
   );
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  useEffect(() => { setPage(1); }, [filter]);
+  useEffect(() => { if (page > totalPages) setPage(totalPages); }, [page, totalPages]);
+
+  const paginated = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page],
+  );
+
+  const goTo = (p: number) => {
+    setPage(p);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -49,7 +87,7 @@ const Projects = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {filtered.map((p) => (
+          {paginated.map((p) => (
             <Link key={p.id} to={`/projetos/${p.id}`} className="group block">
               <div className="aspect-[4/5] overflow-hidden bg-muted relative">
                 <img
@@ -73,6 +111,42 @@ const Projects = () => {
 
         {filtered.length === 0 && (
           <p className="text-center text-muted-foreground py-20">Nenhum projeto encontrado.</p>
+        )}
+
+        {totalPages > 1 && (
+          <Pagination className="mt-16">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); if (page > 1) goTo(page - 1); }}
+                  className={cn(page === 1 && "pointer-events-none opacity-50")}
+                />
+              </PaginationItem>
+              {getPageItems(page, totalPages).map((it, i) =>
+                it === "ellipsis" ? (
+                  <PaginationItem key={`e-${i}`}><PaginationEllipsis /></PaginationItem>
+                ) : (
+                  <PaginationItem key={it}>
+                    <PaginationLink
+                      href="#"
+                      isActive={it === page}
+                      onClick={(e) => { e.preventDefault(); goTo(it); }}
+                    >
+                      {it}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); if (page < totalPages) goTo(page + 1); }}
+                  className={cn(page === totalPages && "pointer-events-none opacity-50")}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </section>
     </>
