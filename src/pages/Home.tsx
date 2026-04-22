@@ -1,7 +1,24 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import heroImg from "@/assets/hero.jpg";
 import { useContent, useProjects, useNews } from "@/store/useStudioStore";
+
+const heroSlides = [
+  {
+    src: heroImg,
+    alt: "Interior arquitetônico minimalista com grandes janelas",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=85",
+    alt: "Residência contemporânea com pátio interno e vegetação",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=85",
+    alt: "Casa de campo com grandes vãos envidraçados emoldurando a mata",
+  },
+];
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
@@ -13,18 +30,65 @@ const Home = () => {
   const featured = projects.slice(0, 4);
   const latestNews = [...news].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
 
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    const update = () => {
+      setCanPrev(emblaApi.canScrollPrev());
+      setCanNext(emblaApi.canScrollNext());
+    };
+    update();
+    emblaApi.on("select", update);
+    emblaApi.on("reInit", update);
+    return () => {
+      emblaApi.off("select", update);
+      emblaApi.off("reInit", update);
+    };
+  }, [emblaApi]);
+
   return (
     <>
       {/* Hero */}
       <section className="relative h-screen min-h-[640px] w-full overflow-hidden">
-        <img
-          src={heroImg}
-          alt="Interior arquitetônico minimalista com grandes janelas"
-          className="absolute inset-0 h-full w-full object-cover"
-          width={1920}
-          height={1280}
-        />
+        <div ref={emblaRef} className="absolute inset-0 h-full w-full overflow-hidden">
+          <div className="flex h-full">
+            {heroSlides.map((slide, i) => (
+              <div key={i} className="relative h-full min-w-0 flex-[0_0_100%]">
+                <img
+                  src={slide.src}
+                  alt={slide.alt}
+                  className="h-full w-full object-cover"
+                  width={1920}
+                  height={1280}
+                  loading={i === 0 ? "eager" : "lazy"}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/20 to-foreground/70" />
+
+        <button
+          type="button"
+          aria-label="Imagem anterior"
+          onClick={() => emblaApi?.scrollPrev()}
+          disabled={!canPrev}
+          className="absolute left-4 md:left-8 top-1/2 z-20 -translate-y-1/2 flex items-center justify-center h-12 w-12 md:h-14 md:w-14 rounded-full border border-background/40 bg-foreground/20 text-background backdrop-blur-sm transition hover:bg-foreground/40 hover:border-background/70 disabled:opacity-40"
+        >
+          <ChevronLeft className="size-6" />
+        </button>
+        <button
+          type="button"
+          aria-label="Próxima imagem"
+          onClick={() => emblaApi?.scrollNext()}
+          disabled={!canNext}
+          className="absolute right-4 md:right-8 top-1/2 z-20 -translate-y-1/2 flex items-center justify-center h-12 w-12 md:h-14 md:w-14 rounded-full border border-background/40 bg-foreground/20 text-background backdrop-blur-sm transition hover:bg-foreground/40 hover:border-background/70 disabled:opacity-40"
+        >
+          <ChevronRight className="size-6" />
+        </button>
         <div className="relative z-10 container-editorial h-full flex flex-col justify-end pb-24 md:pb-32 text-background fade-in-up">
           <p className="text-xs tracking-[0.3em] uppercase mb-6 text-background/80">Escritório de Arquitetura</p>
           <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl max-w-4xl leading-[1.05]">
