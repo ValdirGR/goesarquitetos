@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { useContent } from "@/store/useStudioStore";
-import type { SiteContent, ServiceItem } from "@/data/projects";
+import type { SiteContent, ServiceItem, HeroSlide } from "@/data/projects";
 
 type StringKey = {
   [K in keyof SiteContent]: SiteContent[K] extends string ? K : never;
@@ -59,6 +59,88 @@ const AdminContent = () => {
           <Field k="heroTitle" label="Título" />
           <Field k="heroSubtitle" label="Subtítulo" area />
           <Field k="heroCta" label="Texto do botão" />
+        </section>
+
+        <section className="space-y-4 p-6 border border-border rounded-md bg-card">
+          <div>
+            <h2 className="font-serif text-xl">Carrossel do Hero</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Escolha 3 imagens exibidas em rotação no topo da Home. Use a ordem para definir qual aparece primeiro.
+            </p>
+          </div>
+
+          {(() => {
+            const slides: HeroSlide[] = (form.heroImages?.length ? form.heroImages : [
+              { src: "", alt: "" }, { src: "", alt: "" }, { src: "", alt: "" },
+            ]).slice(0, 3);
+            while (slides.length < 3) slides.push({ src: "", alt: "" });
+
+            const setSlide = (i: number, patch: Partial<HeroSlide>) => {
+              const next = slides.map((s, idx) => (idx === i ? { ...s, ...patch } : s));
+              setForm({ ...form, heroImages: next });
+            };
+            const move = (i: number, dir: -1 | 1) => {
+              const j = i + dir;
+              if (j < 0 || j >= slides.length) return;
+              const next = [...slides];
+              [next[i], next[j]] = [next[j], next[i]];
+              setForm({ ...form, heroImages: next });
+            };
+
+            return (
+              <div className="space-y-4">
+                {slides.map((s, i) => (
+                  <div key={i} className="border border-border rounded-md p-4 bg-background space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Slide {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div className="flex gap-1">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={i === 0}
+                          onClick={() => move(i, -1)}
+                          aria-label="Mover para cima"
+                        >
+                          <ArrowUp className="size-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={i === slides.length - 1}
+                          onClick={() => move(i, 1)}
+                          aria-label="Mover para baixo"
+                        >
+                          <ArrowDown className="size-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <ImageUploader
+                      label="Imagem"
+                      value={s.src}
+                      onChange={(url) => setSlide(i, { src: url })}
+                      recommendedWidth={1920}
+                      recommendedHeight={1080}
+                      previewAspect="16/9"
+                      maxSizeMB={3}
+                    />
+                    <div>
+                      <Label>Texto alternativo (acessibilidade)</Label>
+                      <Input
+                        value={s.alt}
+                        onChange={(e) => setSlide(i, { alt: e.target.value })}
+                        placeholder="Descreva a imagem em uma frase"
+                        className="mt-2"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
         </section>
 
         <section className="space-y-4 p-6 border border-border rounded-md bg-card">
