@@ -12,6 +12,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { ProjectCover } from "@/components/site/ProjectCover";
 
 type Filter = "todos" | ProjectCategory;
 
@@ -86,18 +87,10 @@ const Projects = () => {
           <span className="ml-auto text-xs text-muted-foreground self-center">{filtered.length} projetos</span>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-start">
           {paginated.map((p) => (
             <Link key={p.id} to={`/projetos/${p.id}`} className="group block">
-              <div className="aspect-[4/5] overflow-hidden bg-muted relative">
-                <img
-                  src={p.cover}
-                  alt={p.title}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors duration-500" />
-              </div>
+              <ProjectCover src={p.cover} alt={p.title} />
               <div className="mt-4 flex items-baseline justify-between">
                 <div>
                   <p className="text-xs uppercase tracking-wider text-muted-foreground">{p.category} · {p.year}</p>
