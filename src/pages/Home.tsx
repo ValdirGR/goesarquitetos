@@ -5,19 +5,8 @@ import useEmblaCarousel from "embla-carousel-react";
 import heroImg from "@/assets/hero.jpg";
 import { useContent, useProjects, useNews } from "@/store/useStudioStore";
 
-const heroSlides = [
-  {
-    src: heroImg,
-    alt: "Interior arquitetônico minimalista com grandes janelas",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=85",
-    alt: "Residência contemporânea com pátio interno e vegetação",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=85",
-    alt: "Casa de campo com grandes vãos envidraçados emoldurando a mata",
-  },
+const FALLBACK_HERO = [
+  { src: heroImg, alt: "Interior arquitetônico minimalista com grandes janelas" },
 ];
 
 const formatDate = (iso: string) =>
@@ -29,6 +18,9 @@ const Home = () => {
   const { news } = useNews();
   const featured = projects.slice(0, 4);
   const latestNews = [...news].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
+
+  const configuredHero = (content.heroImages ?? []).filter((s) => s?.src?.trim());
+  const heroSlides = configuredHero.length > 0 ? configuredHero : FALLBACK_HERO;
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
   const [canPrev, setCanPrev] = useState(false);
@@ -43,11 +35,12 @@ const Home = () => {
     update();
     emblaApi.on("select", update);
     emblaApi.on("reInit", update);
+    emblaApi.reInit();
     return () => {
       emblaApi.off("select", update);
       emblaApi.off("reInit", update);
     };
-  }, [emblaApi]);
+  }, [emblaApi, heroSlides.length]);
 
   return (
     <>

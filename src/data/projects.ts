@@ -148,10 +148,16 @@ export interface ServiceItem {
   description: string;
 }
 
+export interface HeroSlide {
+  src: string;
+  alt: string;
+}
+
 export interface SiteContent {
   heroTitle: string;
   heroSubtitle: string;
   heroCta: string;
+  heroImages: HeroSlide[];
   philosophy: string;
   manifesto: string;
   manifestoImage: string;
@@ -169,6 +175,20 @@ export const initialContent: SiteContent = {
   heroSubtitle:
     "Escritório dedicado a projetos residenciais, comerciais, urbanísticos e de interiores — onde luz, matéria e silêncio se encontram.",
   heroCta: "Ver Projetos",
+  heroImages: [
+    {
+      src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=85",
+      alt: "Residência contemporânea com pátio interno e vegetação",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=85",
+      alt: "Casa de campo com grandes vãos envidraçados",
+    },
+    {
+      src: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1920&q=85",
+      alt: "Interior arquitetônico minimalista com luz natural",
+    },
+  ],
   philosophy:
     "Acreditamos em espaços que envelhecem com elegância. Cada projeto começa pela escuta — do lugar, da luz, do cliente — e se constrói com materiais honestos e proporções justas.",
   manifesto:
