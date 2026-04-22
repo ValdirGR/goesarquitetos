@@ -1,14 +1,53 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useNews } from "@/store/useStudioStore";
+import { cn } from "@/lib/utils";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 
+const PAGE_SIZE = 12;
+
+function getPageItems(current: number, total: number): (number | "ellipsis")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const items: (number | "ellipsis")[] = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  if (start > 2) items.push("ellipsis");
+  for (let i = start; i <= end; i++) items.push(i);
+  if (end < total - 1) items.push("ellipsis");
+  items.push(total);
+  return items;
+}
+
 const News = () => {
   const { news } = useNews();
-  const sorted = [...news].sort((a, b) => b.date.localeCompare(a.date));
+  const sorted = useMemo(() => [...news].sort((a, b) => b.date.localeCompare(a.date)), [news]);
   const [featured, ...rest] = sorted;
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(rest.length / PAGE_SIZE));
+  useEffect(() => { if (page > totalPages) setPage(totalPages); }, [page, totalPages]);
+
+  const paginated = useMemo(
+    () => rest.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [rest, page],
+  );
+
+  const goTo = (p: number) => {
+    setPage(p);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -54,7 +93,7 @@ const News = () => {
       {rest.length > 0 && (
         <section className="container-editorial pb-32">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 border-t border-border pt-16">
-            {rest.map((n) => (
+            {paginated.map((n) => (
               <Link key={n.id} to={`/noticias/${n.id}`} className="group block">
                 <div className="aspect-[4/3] overflow-hidden bg-muted">
                   <img
@@ -76,6 +115,42 @@ const News = () => {
               </Link>
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <Pagination className="mt-16">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); if (page > 1) goTo(page - 1); }}
+                    className={cn(page === 1 && "pointer-events-none opacity-50")}
+                  />
+                </PaginationItem>
+                {getPageItems(page, totalPages).map((it, i) =>
+                  it === "ellipsis" ? (
+                    <PaginationItem key={`e-${i}`}><PaginationEllipsis /></PaginationItem>
+                  ) : (
+                    <PaginationItem key={it}>
+                      <PaginationLink
+                        href="#"
+                        isActive={it === page}
+                        onClick={(e) => { e.preventDefault(); goTo(it); }}
+                      >
+                        {it}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ),
+                )}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); if (page < totalPages) goTo(page + 1); }}
+                    className={cn(page === totalPages && "pointer-events-none opacity-50")}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </section>
       )}
     </>
