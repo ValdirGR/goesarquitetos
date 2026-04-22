@@ -40,7 +40,7 @@ const Home = () => {
       emblaApi.off("select", update);
       emblaApi.off("reInit", update);
     };
-  }, [emblaApi]);
+  }, [emblaApi, heroSlides.length]);
 
   return (
     <>
