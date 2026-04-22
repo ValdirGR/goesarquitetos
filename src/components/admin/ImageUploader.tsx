@@ -49,6 +49,47 @@ export const ImageUploader = ({
     ? `${recommendedWidth}/${recommendedHeight}`
     : previewAspect;
 
+  const resizeToRecommended = (dataUrl: string, mime: string): Promise<string> =>
+    new Promise((resolve) => {
+      if (!recommendedWidth || !recommendedHeight) return resolve(dataUrl);
+      const img = new Image();
+      img.onload = () => {
+        const targetW = recommendedWidth;
+        const targetH = recommendedHeight;
+        const targetRatio = targetW / targetH;
+        const srcRatio = img.width / img.height;
+
+        // Cover crop: pega a maior área central que respeita a proporção alvo
+        let sx = 0, sy = 0, sw = img.width, sh = img.height;
+        if (srcRatio > targetRatio) {
+          sw = Math.round(img.height * targetRatio);
+          sx = Math.round((img.width - sw) / 2);
+        } else if (srcRatio < targetRatio) {
+          sh = Math.round(img.width / targetRatio);
+          sy = Math.round((img.height - sh) / 2);
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = targetW;
+        canvas.height = targetH;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return resolve(dataUrl);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
+
+        const outMime = mime === "image/png" ? "image/png" : "image/jpeg";
+        const quality = outMime === "image/jpeg" ? 0.88 : undefined;
+        try {
+          resolve(canvas.toDataURL(outMime, quality));
+        } catch {
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Selecione um arquivo de imagem.");
@@ -61,31 +102,18 @@ export const ImageUploader = ({
     }
     setLoading(true);
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const dataUrl = String(reader.result);
-      // Valida dimensões para alertar o usuário (não bloqueia)
       if (recommendedWidth && recommendedHeight) {
-        const img = new Image();
-        img.onload = () => {
-          const ratio = img.width / img.height;
-          const targetRatio = recommendedWidth / recommendedHeight;
-          if (Math.abs(ratio - targetRatio) > 0.15) {
-            toast.warning(
-              `Proporção diferente da recomendada (${recommendedWidth}×${recommendedHeight}). A imagem será cortada para encaixar.`,
-            );
-          }
-          onChange(dataUrl);
-          setLoading(false);
-        };
-        img.onerror = () => {
-          onChange(dataUrl);
-          setLoading(false);
-        };
-        img.src = dataUrl;
+        const resized = await resizeToRecommended(dataUrl, file.type);
+        if (resized !== dataUrl) {
+          toast.success(`Imagem ajustada para ${recommendedWidth}×${recommendedHeight} px.`);
+        }
+        onChange(resized);
       } else {
         onChange(dataUrl);
-        setLoading(false);
       }
+      setLoading(false);
     };
     reader.onerror = () => {
       toast.error("Falha ao ler o arquivo.");
