@@ -12,6 +12,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { ProjectCover } from "@/components/site/ProjectCover";
 
 type Filter = "todos" | ProjectCategory;
 
