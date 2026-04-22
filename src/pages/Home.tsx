@@ -35,6 +35,7 @@ const Home = () => {
     update();
     emblaApi.on("select", update);
     emblaApi.on("reInit", update);
+    emblaApi.reInit();
     return () => {
       emblaApi.off("select", update);
       emblaApi.off("reInit", update);
