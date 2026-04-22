@@ -83,6 +83,26 @@ const NewsDetail = () => {
         <div className="space-y-6 text-base md:text-lg text-foreground/85 leading-relaxed whitespace-pre-line">
           {post.content}
         </div>
+
+        {post.sources && post.sources.length > 0 && (
+          <aside className="mt-12 pt-8 border-t border-border">
+            <p className="text-xs uppercase tracking-[0.3em] text-primary mb-4">Fontes</p>
+            <ul className="space-y-2">
+              {post.sources.map((s) => (
+                <li key={s.url} className="text-sm">
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground/80 underline-offset-4 hover:text-primary hover:underline break-words"
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )}
       </article>
 
       {others.length > 0 && (
