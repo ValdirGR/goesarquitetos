@@ -87,7 +87,7 @@ const Projects = () => {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {filtered.map((p) => (
+          {paginated.map((p) => (
             <Link key={p.id} to={`/projetos/${p.id}`} className="group block">
               <div className="aspect-[4/5] overflow-hidden bg-muted relative">
                 <img
@@ -111,6 +111,42 @@ const Projects = () => {
 
         {filtered.length === 0 && (
           <p className="text-center text-muted-foreground py-20">Nenhum projeto encontrado.</p>
+        )}
+
+        {totalPages > 1 && (
+          <Pagination className="mt-16">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); if (page > 1) goTo(page - 1); }}
+                  className={cn(page === 1 && "pointer-events-none opacity-50")}
+                />
+              </PaginationItem>
+              {getPageItems(page, totalPages).map((it, i) =>
+                it === "ellipsis" ? (
+                  <PaginationItem key={`e-${i}`}><PaginationEllipsis /></PaginationItem>
+                ) : (
+                  <PaginationItem key={it}>
+                    <PaginationLink
+                      href="#"
+                      isActive={it === page}
+                      onClick={(e) => { e.preventDefault(); goTo(it); }}
+                    >
+                      {it}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => { e.preventDefault(); if (page < totalPages) goTo(page + 1); }}
+                  className={cn(page === totalPages && "pointer-events-none opacity-50")}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         )}
       </section>
     </>
