@@ -46,7 +46,7 @@ const Projects = () => {
   );
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  useEffect(() => { setPage(1); }, [filter]);
+  // Persistência: mantém a página atual ao trocar filtros; só reseta se ficar fora do intervalo.
   useEffect(() => { if (page > totalPages) setPage(totalPages); }, [page, totalPages]);
 
   const paginated = useMemo(
