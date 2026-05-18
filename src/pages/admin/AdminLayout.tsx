@@ -11,12 +11,20 @@ const items = [
 ];
 
 const AdminLayout = () => {
-  const { authed, logout } = useAuth();
+  const { authed, ready, logout } = useAuth();
   const navigate = useNavigate();
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-muted-foreground text-sm">
+        Carregando...
+      </div>
+    );
+  }
   if (!authed) return <Navigate to="/login" replace />;
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate("/");
   };
 

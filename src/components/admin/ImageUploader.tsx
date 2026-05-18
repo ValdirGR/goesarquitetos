@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { uploadImage, dataUrlToBlob } from "@/lib/supabase";
 
 interface ImageUploaderProps {
   value: string;
@@ -103,17 +104,29 @@ export const ImageUploader = ({
     setLoading(true);
     const reader = new FileReader();
     reader.onload = async () => {
-      const dataUrl = String(reader.result);
-      if (recommendedWidth && recommendedHeight) {
-        const resized = await resizeToRecommended(dataUrl, file.type);
-        if (resized !== dataUrl) {
-          toast.success(`Imagem ajustada para ${recommendedWidth}×${recommendedHeight} px.`);
+      try {
+        const dataUrl = String(reader.result);
+        let finalDataUrl = dataUrl;
+        let resized = false;
+        if (recommendedWidth && recommendedHeight) {
+          finalDataUrl = await resizeToRecommended(dataUrl, file.type);
+          resized = finalDataUrl !== dataUrl;
         }
-        onChange(resized);
-      } else {
-        onChange(dataUrl);
+        const blob = dataUrlToBlob(finalDataUrl);
+        const url = await uploadImage(blob);
+        if (resized) {
+          toast.success(`Imagem ajustada para ${recommendedWidth}×${recommendedHeight} px e enviada.`);
+        } else {
+          toast.success("Imagem enviada.");
+        }
+        onChange(url);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        toast.error("Falha ao enviar a imagem.");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     reader.onerror = () => {
       toast.error("Falha ao ler o arquivo.");
@@ -200,7 +213,7 @@ export const ImageUploader = ({
         <div>
           <Label className="text-xs text-muted-foreground font-normal">Ou cole uma URL</Label>
           <Input
-            value={value.startsWith("data:") ? "" : value}
+            value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="https://..."
             className="mt-1.5"

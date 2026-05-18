@@ -9,16 +9,23 @@ import { useAuth } from "@/store/useStudioStore";
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@studio.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (login(email, password)) {
-      toast.success("Bem-vinda de volta");
-      navigate("/admin");
-    } else {
-      toast.error("Credenciais inválidas");
+    setLoading(true);
+    try {
+      const ok = await login(email, password);
+      if (ok) {
+        toast.success("Bem-vindo de volta");
+        navigate("/admin");
+      } else {
+        toast.error("Credenciais inválidas");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,10 +54,9 @@ const Login = () => {
             <Label htmlFor="password">Senha</Label>
             <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-2" />
           </div>
-          <Button type="submit" className="w-full uppercase tracking-[0.2em]" size="lg">Entrar</Button>
-          <p className="text-xs text-muted-foreground text-center">
-            Demo: qualquer e-mail válido + senha com 4+ caracteres.
-          </p>
+          <Button type="submit" className="w-full uppercase tracking-[0.2em]" size="lg" disabled={loading}>
+            {loading ? "Entrando..." : "Entrar"}
+          </Button>
           <Link to="/" className="block text-center text-sm text-muted-foreground hover:text-primary">← Voltar ao site</Link>
         </form>
       </div>

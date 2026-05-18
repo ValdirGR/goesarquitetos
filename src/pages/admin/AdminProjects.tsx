@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { useProjects } from "@/store/useStudioStore";
+import { uploadImage } from "@/lib/supabase";
 import type { Project, ProjectCategory } from "@/data/projects";
 
 const empty: Project = {
@@ -36,14 +37,6 @@ const AdminProjects = () => {
   const isNew = !projects.find((p) => p.id === editing.id);
   const MAX_BULK_MB = 3;
 
-  const readFileAsDataUrl = (file: File) =>
-    new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = () => reject(new Error("read-error"));
-      reader.readAsDataURL(file);
-    });
-
   const handleBulkFiles = async (files: FileList | File[]) => {
     const arr = Array.from(files);
     if (arr.length === 0) return;
@@ -58,14 +51,16 @@ const AdminProjects = () => {
       accepted.push(f);
     }
     try {
-      const urls = await Promise.all(accepted.map(readFileAsDataUrl));
+      const urls = await Promise.all(accepted.map((f) => uploadImage(f, "projects")));
       setEditing((prev) => ({ ...prev, gallery: [...prev.gallery, ...urls] }));
       if (urls.length > 0) toast.success(`${urls.length} imagem(ns) adicionada(s) à galeria`);
       if (skippedType > 0) toast.warning(`${skippedType} arquivo(s) ignorado(s) (não são imagens)`);
       if (skippedSize > 0) toast.warning(`${skippedSize} arquivo(s) ignorado(s) (acima de ${MAX_BULK_MB} MB)`);
       if (urls.length === 0 && skippedType === 0 && skippedSize === 0) toast.error("Nenhum arquivo válido.");
-    } catch {
-      toast.error("Falha ao ler um ou mais arquivos.");
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      toast.error("Falha ao enviar uma ou mais imagens.");
     } finally {
       setBulkLoading(false);
     }
