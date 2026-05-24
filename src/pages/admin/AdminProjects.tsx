@@ -126,11 +126,24 @@ const AdminProjects = () => {
     });
   };
 
-  const onDelete = (id: string) => {
-    if (confirm("Excluir este projeto?")) {
-      remove(id);
-      toast.success("Projeto excluído");
+  const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+
+  const onDelete = (p: Project) => {
+    setDeleteTarget(p);
+    setDeleteConfirmText("");
+  };
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    if (deleteConfirmText.trim() !== deleteTarget.title) {
+      toast.error("O nome digitado não confere com o título do projeto.");
+      return;
     }
+    remove(deleteTarget.id);
+    toast.success(`Projeto "${deleteTarget.title}" excluído.`);
+    setDeleteTarget(null);
+    setDeleteConfirmText("");
   };
 
   return (
@@ -167,7 +180,7 @@ const AdminProjects = () => {
                 <TableCell className="text-muted-foreground">{p.location}</TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Pencil className="size-4" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() => onDelete(p.id)}><Trash2 className="size-4" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => onDelete(p)}><Trash2 className="size-4" /></Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -362,6 +375,57 @@ const AdminProjects = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
             <Button onClick={save}>Salvar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={deleteTarget !== null}
+        onOpenChange={(o) => {
+          if (!o) {
+            setDeleteTarget(null);
+            setDeleteConfirmText("");
+          }
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl">Excluir projeto</DialogTitle>
+          </DialogHeader>
+          {deleteTarget && (
+            <div className="space-y-4 py-2">
+              <p className="text-sm text-muted-foreground">
+                Esta ação é irreversível. Para confirmar, digite o título do projeto abaixo:
+              </p>
+              <p className="font-serif text-lg">{deleteTarget.title}</p>
+              <Input
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="Digite o título exatamente"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && deleteConfirmText.trim() === deleteTarget.title) confirmDelete();
+                }}
+              />
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteTarget(null);
+                setDeleteConfirmText("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={!deleteTarget || deleteConfirmText.trim() !== deleteTarget.title}
+            >
+              <Trash2 className="size-4 mr-1" /> Excluir
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
