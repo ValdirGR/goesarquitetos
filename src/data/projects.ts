@@ -1,4 +1,4 @@
-export type ProjectCategory = "residencial" | "comercial";
+export type ProjectCategory = "residencial" | "comercial" | "interiores";
 
 export interface Project {
   id: string;

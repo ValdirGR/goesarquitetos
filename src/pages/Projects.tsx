@@ -20,6 +20,7 @@ const filters: { key: Filter; label: string }[] = [
   { key: "todos", label: "Todos" },
   { key: "residencial", label: "Residenciais" },
   { key: "comercial", label: "Comerciais" },
+  { key: "interiores", label: "Interiores" },
 ];
 
 const PAGE_SIZE = 12;

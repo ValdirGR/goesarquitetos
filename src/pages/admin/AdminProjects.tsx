@@ -223,6 +223,7 @@ const AdminProjects = () => {
                   <SelectContent>
                     <SelectItem value="residencial">Residencial</SelectItem>
                     <SelectItem value="comercial">Comercial</SelectItem>
+                    <SelectItem value="interiores">Interiores</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
