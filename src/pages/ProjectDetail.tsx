@@ -1,11 +1,41 @@
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useProjects } from "@/store/useStudioStore";
 
 const ProjectDetail = () => {
   const { id } = useParams();
   const { projects } = useProjects();
   const project = projects.find((p) => p.id === id);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const gallery = project?.gallery ?? [];
+
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
+  const showPrev = useCallback(
+    () => setLightboxIndex((i) => (i === null ? null : (i - 1 + gallery.length) % gallery.length)),
+    [gallery.length]
+  );
+  const showNext = useCallback(
+    () => setLightboxIndex((i) => (i === null ? null : (i + 1) % gallery.length)),
+    [gallery.length]
+  );
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      else if (e.key === "ArrowLeft") showPrev();
+      else if (e.key === "ArrowRight") showNext();
+    };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [lightboxIndex, closeLightbox, showPrev, showNext]);
 
   if (!project) {
     return (
@@ -54,13 +84,85 @@ const ProjectDetail = () => {
 
       <section className="container-editorial pb-24">
         <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-          {project.gallery.map((src, i) => (
-            <div key={i} className={`overflow-hidden bg-muted ${i % 3 === 0 ? "md:col-span-2 aspect-[16/9]" : "aspect-[4/5]"}`}>
-              <img src={src} alt={`${project.title} — imagem ${i + 1}`} loading="lazy" className="h-full w-full object-cover" />
-            </div>
+          {gallery.map((src, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setLightboxIndex(i)}
+              className="group relative overflow-hidden bg-muted aspect-[3/2] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label={`Abrir imagem ${i + 1} em tamanho original`}
+            >
+              <img
+                src={src}
+                alt={`${project.title} — imagem ${i + 1}`}
+                loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            </button>
           ))}
         </div>
       </section>
+
+      {lightboxIndex !== null && gallery[lightboxIndex] && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+          onClick={closeLightbox}
+        >
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              closeLightbox();
+            }}
+            className="absolute top-4 right-4 md:top-6 md:right-6 text-white/90 hover:text-white p-2"
+            aria-label="Fechar"
+          >
+            <X className="size-7" />
+          </button>
+
+          {gallery.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  showPrev();
+                }}
+                className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-2"
+                aria-label="Imagem anterior"
+              >
+                <ChevronLeft className="size-8 md:size-10" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  showNext();
+                }}
+                className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 text-white/80 hover:text-white p-2"
+                aria-label="Próxima imagem"
+              >
+                <ChevronRight className="size-8 md:size-10" />
+              </button>
+            </>
+          )}
+
+          <img
+            src={gallery[lightboxIndex]}
+            alt={`${project.title} — imagem ${lightboxIndex + 1}`}
+            className="max-h-[92vh] max-w-[94vw] object-contain select-none"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {gallery.length > 1 && (
+            <div className="absolute bottom-4 left-0 right-0 text-center text-white/80 text-xs tracking-[0.2em]">
+              {lightboxIndex + 1} / {gallery.length}
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 };
