@@ -2,29 +2,35 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 type Orientation = "portrait" | "landscape" | "square";
+type AspectMode = "auto" | "landscape" | "portrait" | "square";
 
 interface ProjectCoverProps {
   src: string;
   alt: string;
+  /**
+   * Define o aspect ratio da capa.
+   * - "auto" (padrão): detecta a orientação real da imagem.
+   * - "landscape" | "portrait" | "square": força o formato para padronizar a grade.
+   */
+  aspect?: AspectMode;
 }
 
+const ASPECT_CLASS: Record<Exclude<AspectMode, "auto">, string> = {
+  landscape: "aspect-[4/3]",
+  portrait: "aspect-[4/5]",
+  square: "aspect-square",
+};
+
 /**
- * Capa de projeto adaptativa: detecta a orientação real da imagem ao carregar
- * e aplica o melhor aspect ratio para evitar cortes excessivos.
- * - Retrato  -> aspect-[4/5]
- * - Paisagem -> aspect-[4/3]
- * - Quadrado -> aspect-square
+ * Capa de projeto. Quando `aspect="auto"` detecta a orientação da imagem
+ * para evitar cortes; caso contrário usa o formato informado.
  */
-export const ProjectCover = ({ src, alt }: ProjectCoverProps) => {
+export const ProjectCover = ({ src, alt, aspect = "auto" }: ProjectCoverProps) => {
   // Default em retrato preserva o ritmo editorial enquanto a imagem carrega.
   const [orientation, setOrientation] = useState<Orientation>("portrait");
 
   const aspectClass =
-    orientation === "landscape"
-      ? "aspect-[4/3]"
-      : orientation === "square"
-        ? "aspect-square"
-        : "aspect-[4/5]";
+    aspect === "auto" ? ASPECT_CLASS[orientation] : ASPECT_CLASS[aspect];
 
   return (
     <div className={cn("overflow-hidden bg-muted relative", aspectClass)}>
@@ -33,6 +39,7 @@ export const ProjectCover = ({ src, alt }: ProjectCoverProps) => {
         alt={alt}
         loading="lazy"
         onLoad={(e) => {
+          if (aspect !== "auto") return;
           const img = e.currentTarget;
           const ratio = img.naturalWidth / img.naturalHeight;
           if (ratio > 1.15) setOrientation("landscape");
