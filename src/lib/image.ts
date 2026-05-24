@@ -43,13 +43,14 @@ const loadImage = (src: string): Promise<HTMLImageElement> =>
     img.src = src;
   });
 
-const fileToDataUrl = (file: Blob): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result));
-    r.onerror = () => reject(new Error("Falha ao ler o arquivo."));
-    r.readAsDataURL(file);
-  });
+const loadImageFromBlob = async (file: Blob): Promise<HTMLImageElement> => {
+  const url = URL.createObjectURL(file);
+  try {
+    return await loadImage(url);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+};
 
 const canvasToBlob = (canvas: HTMLCanvasElement, quality: number): Promise<Blob> =>
   new Promise((resolve, reject) => {
@@ -130,8 +131,7 @@ export async function compressImage(
   const qualities = opts.qualities ?? DEFAULT_QUALITIES;
   const maxWidths = opts.maxWidths ?? DEFAULT_MAX_WIDTHS;
 
-  const dataUrl = await fileToDataUrl(file);
-  const img = await loadImage(dataUrl);
+  const img = await loadImageFromBlob(file);
 
   // Modo "crop fixo": tamanho-alvo definido pelo chamador (ex.: capa 1200×800).
   if (opts.cropTo) {

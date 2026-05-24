@@ -36,20 +36,16 @@ const AdminProjects = () => {
   const [bulkLoading, setBulkLoading] = useState(false);
   const bulkInputRef = useRef<HTMLInputElement>(null);
   const isNew = !projects.find((p) => p.id === editing.id);
-  const MAX_BULK_INPUT_MB = 25;
   const TARGET_KB = 400;
 
   const handleBulkFiles = async (files: FileList | File[]) => {
     const arr = Array.from(files);
     if (arr.length === 0) return;
     setBulkLoading(true);
-    const maxInputBytes = MAX_BULK_INPUT_MB * 1024 * 1024;
     const accepted: File[] = [];
     let skippedType = 0;
-    let skippedSize = 0;
     for (const f of arr) {
       if (!f.type.startsWith("image/")) { skippedType++; continue; }
-      if (f.size > maxInputBytes) { skippedSize++; continue; }
       accepted.push(f);
     }
     try {
@@ -64,8 +60,7 @@ const AdminProjects = () => {
       if (urls.length > 0) toast.success(`${urls.length} imagem(ns) adicionada(s) à galeria`);
       if (overTarget > 0) toast.warning(`${overTarget} imagem(ns) ficaram acima de ${TARGET_KB} KB após otimização.`);
       if (skippedType > 0) toast.warning(`${skippedType} arquivo(s) ignorado(s) (não são imagens)`);
-      if (skippedSize > 0) toast.warning(`${skippedSize} arquivo(s) ignorado(s) (acima de ${MAX_BULK_INPUT_MB} MB)`);
-      if (urls.length === 0 && skippedType === 0 && skippedSize === 0) toast.error("Nenhum arquivo válido.");
+      if (urls.length === 0 && skippedType === 0) toast.error("Nenhum arquivo válido.");
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);

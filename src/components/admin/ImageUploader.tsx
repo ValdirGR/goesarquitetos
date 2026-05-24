@@ -20,8 +20,6 @@ interface ImageUploaderProps {
   previewAspect?: string;
   /** Tamanho-alvo da imagem final em KB. Default 400. */
   targetMaxKB?: number;
-  /** Teto absoluto do arquivo de entrada em MB (antes da compressão). Default 25. */
-  maxInputMB?: number;
   /**
    * Quando `true` (default), aplica cover-crop centralizado nas dimensões
    * recomendadas. Quando `false`, preserva a proporção original e apenas
@@ -47,7 +45,6 @@ export const ImageUploader = ({
   recommendedHeight,
   previewAspect = "4/3",
   targetMaxKB = 400,
-  maxInputMB = 25,
   cropToRecommended = true,
   hideUrlInput = false,
   folder = "misc",
@@ -63,12 +60,6 @@ export const ImageUploader = ({
   const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Selecione um arquivo de imagem.");
-      return;
-    }
-    if (file.size > maxInputMB * 1024 * 1024) {
-      toast.error(
-        `Arquivo muito grande (${formatBytes(file.size)}). Limite de entrada: ${maxInputMB} MB.`,
-      );
       return;
     }
     setLoading(true);
