@@ -8,7 +8,7 @@
 create table if not exists public.projects (
   id          text primary key,
   title       text not null,
-  category    text not null check (category in ('residencial','comercial')),
+  category    text not null check (category in ('residencial','comercial','interiores')),
   year        int  not null,
   location    text not null default '',
   area        text not null default '',
