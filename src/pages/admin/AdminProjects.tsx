@@ -89,7 +89,16 @@ const AdminProjects = () => {
       toast.error("Título obrigatório");
       return;
     }
-    const id = editing.id || slugify(editing.title);
+    let id = editing.id;
+    if (!id) {
+      const base = slugify(editing.title) || "projeto";
+      const existing = new Set(projects.map((p) => p.id));
+      id = base;
+      let n = 2;
+      while (existing.has(id)) {
+        id = `${base}-${n++}`;
+      }
+    }
     const gallery = editing.gallery.filter(Boolean);
     upsert({ ...editing, id, gallery, cover: editing.cover || gallery[0] || "" });
     toast.success(isNew ? "Projeto criado" : "Projeto atualizado");

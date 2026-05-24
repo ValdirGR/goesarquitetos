@@ -51,7 +51,16 @@ const AdminNews = () => {
       toast.error("Título obrigatório");
       return;
     }
-    const id = editing.id || slugify(editing.title);
+    let id = editing.id;
+    if (!id) {
+      const base = slugify(editing.title) || "noticia";
+      const existing = new Set(news.map((n) => n.id));
+      id = base;
+      let n = 2;
+      while (existing.has(id)) {
+        id = `${base}-${n++}`;
+      }
+    }
     upsert({ ...editing, id });
     toast.success(isNew ? "Notícia criada" : "Notícia atualizada");
     setOpen(false);
