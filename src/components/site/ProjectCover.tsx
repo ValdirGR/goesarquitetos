@@ -46,7 +46,7 @@ export const ProjectCover = ({ src, alt, aspect = "auto" }: ProjectCoverProps) =
           else if (ratio < 0.9) setOrientation("portrait");
           else setOrientation("square");
         }}
-        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-105"
       />
       <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors duration-500" />
     </div>

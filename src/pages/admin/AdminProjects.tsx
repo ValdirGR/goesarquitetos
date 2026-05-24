@@ -202,6 +202,7 @@ const AdminProjects = () => {
               onChange={(url) => setEditing({ ...editing, cover: url })}
               recommendedWidth={1200}
               recommendedHeight={800}
+              cropToRecommended={false}
               folder="projects"
             />
             <div>

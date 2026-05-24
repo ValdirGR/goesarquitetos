@@ -22,6 +22,12 @@ interface ImageUploaderProps {
   targetMaxKB?: number;
   /** Teto absoluto do arquivo de entrada em MB (antes da compressão). Default 25. */
   maxInputMB?: number;
+  /**
+   * Quando `true` (default), aplica cover-crop centralizado nas dimensões
+   * recomendadas. Quando `false`, preserva a proporção original e apenas
+   * comprime/redimensiona para caber no alvo de tamanho.
+   */
+  cropToRecommended?: boolean;
   /** @deprecated Substituído por `targetMaxKB`. Mantido para compatibilidade. */
   maxSizeMB?: number;
   /** Esconde o campo de URL e mostra só o uploader */
@@ -42,6 +48,7 @@ export const ImageUploader = ({
   previewAspect = "4/3",
   targetMaxKB = 400,
   maxInputMB = 25,
+  cropToRecommended = true,
   hideUrlInput = false,
   folder = "misc",
   className,
@@ -67,7 +74,7 @@ export const ImageUploader = ({
     setLoading(true);
     try {
       const cropTo =
-        recommendedWidth && recommendedHeight
+        cropToRecommended && recommendedWidth && recommendedHeight
           ? { width: recommendedWidth, height: recommendedHeight }
           : undefined;
       const result = await compressImage(file, { targetMaxKB, cropTo });
