@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Pencil, Plus, Trash2, X, Upload, Images } from "lucide-react";
+import { Pencil, Plus, Trash2, X, Upload, Images, GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -111,6 +111,19 @@ const AdminProjects = () => {
   };
   const addGalleryItem = () => {
     setEditing({ ...editing, gallery: [...editing.gallery, ""] });
+  };
+
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const moveGalleryItem = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0) return;
+    setEditing((prev) => {
+      const next = [...prev.gallery];
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item);
+      return { ...prev, gallery: next };
+    });
   };
 
   const onDelete = (id: string) => {
@@ -245,11 +258,51 @@ const AdminProjects = () => {
               </div>
 
               {editing.gallery.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
+                <>
+                  <p className="text-[11px] text-muted-foreground mb-2">
+                    Arraste as miniaturas para reordenar.
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
                   {editing.gallery.map((url, i) =>
                     url ? (
-                      <div key={`thumb-${i}`} className="relative group aspect-[4/3] overflow-hidden rounded-md border border-border bg-muted">
-                        <img src={url} alt={`Galeria ${i + 1}`} className="h-full w-full object-cover" loading="lazy" />
+                      <div
+                        key={`thumb-${i}`}
+                        draggable
+                        onDragStart={(e) => {
+                          setDragIndex(i);
+                          e.dataTransfer.effectAllowed = "move";
+                          e.dataTransfer.setData("text/plain", String(i));
+                        }}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = "move";
+                          if (dragOverIndex !== i) setDragOverIndex(i);
+                        }}
+                        onDragLeave={() => {
+                          if (dragOverIndex === i) setDragOverIndex(null);
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          const from = dragIndex ?? Number(e.dataTransfer.getData("text/plain"));
+                          if (!Number.isNaN(from)) moveGalleryItem(from, i);
+                          setDragIndex(null);
+                          setDragOverIndex(null);
+                        }}
+                        onDragEnd={() => {
+                          setDragIndex(null);
+                          setDragOverIndex(null);
+                        }}
+                        className={`relative group aspect-[4/3] overflow-hidden rounded-md border bg-muted cursor-move transition-all ${
+                          dragOverIndex === i && dragIndex !== i
+                            ? "border-primary ring-2 ring-primary/40"
+                            : "border-border"
+                        } ${dragIndex === i ? "opacity-40" : ""}`}
+                      >
+                        <img src={url} alt={`Galeria ${i + 1}`} className="h-full w-full object-cover pointer-events-none" loading="lazy" />
+                        <span className="absolute top-1 left-1 inline-flex items-center justify-center size-6 rounded-full bg-background/85 text-foreground border border-border opacity-0 group-hover:opacity-100 transition-opacity">
+                          <GripVertical className="size-3.5" />
+                        </span>
                         <button
                           type="button"
                           onClick={() => removeGalleryItem(i)}
@@ -264,7 +317,8 @@ const AdminProjects = () => {
                       </div>
                     ) : null
                   )}
-                </div>
+                  </div>
+                </>
               )}
 
               {editing.gallery.length === 0 && (
