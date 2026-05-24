@@ -136,7 +136,6 @@ const AdminNews = () => {
               onChange={(url) => setEditing({ ...editing, cover: url })}
               recommendedWidth={1600}
               recommendedHeight={1200}
-              maxSizeMB={3}
             />
             <div>
               <Label>Resumo</Label>

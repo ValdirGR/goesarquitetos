@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { uploadImage, dataUrlToBlob } from "@/lib/supabase";
+import { uploadImage } from "@/lib/supabase";
+import { compressImage, formatBytes } from "@/lib/image";
 
 interface ImageUploaderProps {
   value: string;
@@ -17,20 +18,20 @@ interface ImageUploaderProps {
   recommendedHeight?: number;
   /** Proporção visual da pré-visualização (CSS aspect-ratio). Ex: "3/4", "16/9". */
   previewAspect?: string;
-  /** Tamanho máximo do arquivo em MB (default 3) */
+  /** Tamanho-alvo da imagem final em KB. Default 400. */
+  targetMaxKB?: number;
+  /** Teto absoluto do arquivo de entrada em MB (antes da compressão). Default 25. */
+  maxInputMB?: number;
+  /** @deprecated Substituído por `targetMaxKB`. Mantido para compatibilidade. */
   maxSizeMB?: number;
   /** Esconde o campo de URL e mostra só o uploader */
   hideUrlInput?: boolean;
+  /** Pasta no bucket onde a imagem será salva. */
+  folder?: string;
   className?: string;
 }
 
 const ACCEPT = "image/jpeg,image/png,image/webp,image/avif";
-
-const formatBytes = (b: number) => {
-  if (b < 1024) return `${b} B`;
-  if (b < 1024 * 1024) return `${(b / 1024).toFixed(0)} KB`;
-  return `${(b / (1024 * 1024)).toFixed(1)} MB`;
-};
 
 export const ImageUploader = ({
   value,
@@ -39,8 +40,10 @@ export const ImageUploader = ({
   recommendedWidth,
   recommendedHeight,
   previewAspect = "4/3",
-  maxSizeMB = 3,
+  targetMaxKB = 400,
+  maxInputMB = 25,
   hideUrlInput = false,
+  folder = "misc",
   className,
 }: ImageUploaderProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,89 +53,44 @@ export const ImageUploader = ({
     ? `${recommendedWidth}/${recommendedHeight}`
     : previewAspect;
 
-  const resizeToRecommended = (dataUrl: string, mime: string): Promise<string> =>
-    new Promise((resolve) => {
-      if (!recommendedWidth || !recommendedHeight) return resolve(dataUrl);
-      const img = new Image();
-      img.onload = () => {
-        const targetW = recommendedWidth;
-        const targetH = recommendedHeight;
-        const targetRatio = targetW / targetH;
-        const srcRatio = img.width / img.height;
-
-        // Cover crop: pega a maior área central que respeita a proporção alvo
-        let sx = 0, sy = 0, sw = img.width, sh = img.height;
-        if (srcRatio > targetRatio) {
-          sw = Math.round(img.height * targetRatio);
-          sx = Math.round((img.width - sw) / 2);
-        } else if (srcRatio < targetRatio) {
-          sh = Math.round(img.width / targetRatio);
-          sy = Math.round((img.height - sh) / 2);
-        }
-
-        const canvas = document.createElement("canvas");
-        canvas.width = targetW;
-        canvas.height = targetH;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return resolve(dataUrl);
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = "high";
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetW, targetH);
-
-        const outMime = mime === "image/png" ? "image/png" : "image/jpeg";
-        const quality = outMime === "image/jpeg" ? 0.88 : undefined;
-        try {
-          resolve(canvas.toDataURL(outMime, quality));
-        } catch {
-          resolve(dataUrl);
-        }
-      };
-      img.onerror = () => resolve(dataUrl);
-      img.src = dataUrl;
-    });
-
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Selecione um arquivo de imagem.");
       return;
     }
-    const maxBytes = maxSizeMB * 1024 * 1024;
-    if (file.size > maxBytes) {
-      toast.error(`Imagem maior que ${maxSizeMB} MB (${formatBytes(file.size)}). Otimize antes de enviar.`);
+    if (file.size > maxInputMB * 1024 * 1024) {
+      toast.error(
+        `Arquivo muito grande (${formatBytes(file.size)}). Limite de entrada: ${maxInputMB} MB.`,
+      );
       return;
     }
     setLoading(true);
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        const dataUrl = String(reader.result);
-        let finalDataUrl = dataUrl;
-        let resized = false;
-        if (recommendedWidth && recommendedHeight) {
-          finalDataUrl = await resizeToRecommended(dataUrl, file.type);
-          resized = finalDataUrl !== dataUrl;
-        }
-        const blob = dataUrlToBlob(finalDataUrl);
-        const url = await uploadImage(blob);
-        if (resized) {
-          toast.success(`Imagem ajustada para ${recommendedWidth}×${recommendedHeight} px e enviada.`);
-        } else {
-          toast.success("Imagem enviada.");
-        }
-        onChange(url);
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-        toast.error("Falha ao enviar a imagem.");
-      } finally {
-        setLoading(false);
+    try {
+      const cropTo =
+        recommendedWidth && recommendedHeight
+          ? { width: recommendedWidth, height: recommendedHeight }
+          : undefined;
+      const result = await compressImage(file, { targetMaxKB, cropTo });
+      const url = await uploadImage(result.blob, folder, "jpg");
+      onChange(url);
+      if (!result.withinTarget) {
+        toast.warning(
+          `Imagem enviada com ${formatBytes(result.size)} (alvo de ${targetMaxKB} KB não atingido).`,
+        );
+      } else if (file.size > result.size) {
+        toast.success(
+          `Imagem otimizada: ${formatBytes(file.size)} → ${formatBytes(result.size)}.`,
+        );
+      } else {
+        toast.success("Imagem enviada.");
       }
-    };
-    reader.onerror = () => {
-      toast.error("Falha ao ler o arquivo.");
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      toast.error("Falha ao processar a imagem.");
+    } finally {
       setLoading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const onDrop = (e: React.DragEvent) => {
@@ -187,7 +145,7 @@ export const ImageUploader = ({
               onClick={() => inputRef.current?.click()}
             >
               <Upload className="size-3.5 mr-1.5" />
-              {loading ? "Carregando..." : value ? "Substituir imagem" : "Enviar do computador"}
+              {loading ? "Otimizando..." : value ? "Substituir imagem" : "Enviar do computador"}
             </Button>
             <input
               ref={inputRef}
@@ -204,7 +162,7 @@ export const ImageUploader = ({
           <ul className="space-y-0.5">
             {dimsLabel && <li>Dimensões recomendadas: <span className="text-foreground/80">{dimsLabel}</span></li>}
             <li>Formatos: JPG, PNG, WebP, AVIF</li>
-            <li>Tamanho máximo: {maxSizeMB} MB</li>
+            <li>Compressão automática até <span className="text-foreground/80">{targetMaxKB} KB</span></li>
           </ul>
         </div>
       </div>

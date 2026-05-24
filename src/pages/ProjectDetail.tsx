@@ -27,7 +27,7 @@ const ProjectDetail = () => {
       </section>
 
       <section className="container-editorial pb-16">
-        <div className="aspect-[16/10] overflow-hidden bg-muted">
+        <div className="aspect-[3/2] overflow-hidden bg-muted">
           <img src={project.cover} alt={project.title} className="h-full w-full object-cover" />
         </div>
       </section>

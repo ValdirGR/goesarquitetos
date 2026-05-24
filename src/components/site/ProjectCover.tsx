@@ -16,7 +16,7 @@ interface ProjectCoverProps {
 }
 
 const ASPECT_CLASS: Record<Exclude<AspectMode, "auto">, string> = {
-  landscape: "aspect-[4/3]",
+  landscape: "aspect-[3/2]",
   portrait: "aspect-[4/5]",
   square: "aspect-square",
 };

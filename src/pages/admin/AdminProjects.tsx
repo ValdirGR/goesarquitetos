@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { useProjects } from "@/store/useStudioStore";
 import { uploadImage } from "@/lib/supabase";
+import { compressImage } from "@/lib/image";
 import type { Project, ProjectCategory } from "@/data/projects";
 
 const empty: Project = {
@@ -35,27 +36,35 @@ const AdminProjects = () => {
   const [bulkLoading, setBulkLoading] = useState(false);
   const bulkInputRef = useRef<HTMLInputElement>(null);
   const isNew = !projects.find((p) => p.id === editing.id);
-  const MAX_BULK_MB = 3;
+  const MAX_BULK_INPUT_MB = 25;
+  const TARGET_KB = 400;
 
   const handleBulkFiles = async (files: FileList | File[]) => {
     const arr = Array.from(files);
     if (arr.length === 0) return;
     setBulkLoading(true);
-    const maxBytes = MAX_BULK_MB * 1024 * 1024;
+    const maxInputBytes = MAX_BULK_INPUT_MB * 1024 * 1024;
     const accepted: File[] = [];
     let skippedType = 0;
     let skippedSize = 0;
     for (const f of arr) {
       if (!f.type.startsWith("image/")) { skippedType++; continue; }
-      if (f.size > maxBytes) { skippedSize++; continue; }
+      if (f.size > maxInputBytes) { skippedSize++; continue; }
       accepted.push(f);
     }
     try {
-      const urls = await Promise.all(accepted.map((f) => uploadImage(f, "projects")));
+      const urls: string[] = [];
+      let overTarget = 0;
+      for (const f of accepted) {
+        const result = await compressImage(f, { targetMaxKB: TARGET_KB });
+        if (!result.withinTarget) overTarget++;
+        urls.push(await uploadImage(result.blob, "projects", "jpg"));
+      }
       setEditing((prev) => ({ ...prev, gallery: [...prev.gallery, ...urls] }));
       if (urls.length > 0) toast.success(`${urls.length} imagem(ns) adicionada(s) à galeria`);
+      if (overTarget > 0) toast.warning(`${overTarget} imagem(ns) ficaram acima de ${TARGET_KB} KB após otimização.`);
       if (skippedType > 0) toast.warning(`${skippedType} arquivo(s) ignorado(s) (não são imagens)`);
-      if (skippedSize > 0) toast.warning(`${skippedSize} arquivo(s) ignorado(s) (acima de ${MAX_BULK_MB} MB)`);
+      if (skippedSize > 0) toast.warning(`${skippedSize} arquivo(s) ignorado(s) (acima de ${MAX_BULK_INPUT_MB} MB)`);
       if (urls.length === 0 && skippedType === 0 && skippedSize === 0) toast.error("Nenhum arquivo válido.");
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -191,9 +200,9 @@ const AdminProjects = () => {
               label="Imagem de capa"
               value={editing.cover}
               onChange={(url) => setEditing({ ...editing, cover: url })}
-              recommendedWidth={1600}
-              recommendedHeight={2000}
-              maxSizeMB={3}
+              recommendedWidth={1200}
+              recommendedHeight={800}
+              folder="projects"
             />
             <div>
               <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
@@ -231,7 +240,7 @@ const AdminProjects = () => {
                 onDrop={onBulkDrop}
                 className="mb-4 border border-dashed border-border rounded-md p-4 text-center text-xs text-muted-foreground bg-muted/30"
               >
-                Arraste várias imagens aqui para adicionar de uma vez (até {MAX_BULK_MB} MB cada).
+                Arraste várias imagens aqui para adicionar de uma vez (otimizadas até {TARGET_KB} KB cada).
               </div>
 
               {editing.gallery.length > 0 && (
@@ -284,7 +293,7 @@ const AdminProjects = () => {
                       onChange={(u) => setGalleryItem(i, u)}
                       recommendedWidth={1600}
                       recommendedHeight={1200}
-                      maxSizeMB={3}
+                      folder="projects"
                     />
                   </div>
                 ))}

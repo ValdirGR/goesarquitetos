@@ -125,7 +125,6 @@ const AdminContent = () => {
                       recommendedWidth={1920}
                       recommendedHeight={1080}
                       previewAspect="16/9"
-                      maxSizeMB={3}
                     />
                     <div>
                       <Label>Texto alternativo (acessibilidade)</Label>
@@ -207,7 +206,6 @@ const AdminContent = () => {
             onChange={(url) => setText("manifestoImage", url)}
             recommendedWidth={1280}
             recommendedHeight={1600}
-            maxSizeMB={3}
           />
         </section>
 
