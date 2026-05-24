@@ -91,13 +91,26 @@ const AdminProjects = () => {
     }
     let id = editing.id;
     if (!id) {
-      const base = slugify(editing.title) || "projeto";
       const existing = new Set(projects.map((p) => p.id));
-      id = base;
-      let n = 2;
-      while (existing.has(id)) {
-        id = `${base}-${n++}`;
+      const base = slugify(editing.title) || "projeto";
+      const city = slugify((editing.location || "").split(",")[0] || "");
+
+      // 1) tenta slug do título
+      let candidate = base;
+      // 2) se colidir, anexa a cidade
+      if (existing.has(candidate) && city) {
+        candidate = `${base}-${city}`;
       }
+      // 3) se ainda colidir, anexa sufixo numérico -01, -02, ...
+      if (existing.has(candidate)) {
+        const prefix = candidate;
+        let n = 1;
+        do {
+          candidate = `${prefix}-${String(n).padStart(2, "0")}`;
+          n++;
+        } while (existing.has(candidate));
+      }
+      id = candidate;
     }
     const gallery = editing.gallery.filter(Boolean);
     upsert({ ...editing, id, gallery, cover: editing.cover || gallery[0] || "" });
