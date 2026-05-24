@@ -16,7 +16,7 @@ const Home = () => {
   const { content } = useContent();
   const { projects } = useProjects();
   const { news } = useNews();
-  const featured = projects.slice(0, 4);
+  const featured = projects.slice(0, 3);
   const latestNews = [...news].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
 
   const configuredHero = (content.heroImages ?? []).filter((s) => s?.src?.trim());
@@ -123,10 +123,10 @@ const Home = () => {
           </Link>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {featured.map((p) => (
             <Link key={p.id} to={`/projetos/${p.id}`} className="group block">
-              <div className="aspect-[3/4] overflow-hidden bg-muted">
+              <div className="aspect-[3/2] overflow-hidden bg-muted">
                 <img
                   src={p.cover}
                   alt={p.title}
